@@ -30,6 +30,7 @@ class Rss(object):
     """Lets channels subscribe to RSS feeds."""
     def __init__(self, bot):
         self.bot = bot
+        self.bot.include('irc3.plugins.userlist')
         self.log = self.bot.log
         self.joined_channels = set()
         self.bot.create_task(self.startup())
@@ -73,6 +74,15 @@ class Rss(object):
             self.save_feeds()
             self.log.info('finished checking {}...'.format(feed_name))
             await asyncio.sleep(feed['refresh'], loop=self.bot.loop)
+
+    @command(permission='view')
+    def reload(self, mask, target, args):
+        """Reload configs. This doesn't actually work right...
+
+           %%reload
+        """
+        self.load_feeds()
+        self.bot.privmsg(irc_channel, 'reload successful')
 
     @command(permission='view')
     def add_feed(self, mask, target, args):
